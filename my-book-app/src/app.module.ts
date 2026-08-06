@@ -1,0 +1,26 @@
+import { Module } from '@nestjs/common';
+import { AppController } from './app.controller';
+import { AppService } from './app.service';
+import { ConfigModule } from '@nestjs/config';
+import { AuthModule } from './auth/auth.module';
+import { BooksModule } from './books/books.module';
+import { UsersModule } from './users/users.module';
+import Joi from 'joi';
+
+@Module({
+  imports: [
+    ConfigModule.forRoot({
+      isGlobal: true,
+      validationSchema: Joi.object({
+        HOST: Joi.string().required(),
+        PORT: Joi.number().port().required(),
+      }),
+    }),
+    UsersModule,
+    AuthModule,
+    BooksModule,
+  ],
+  controllers: [AppController],
+  providers: [AppService],
+})
+export class AppModule {}
