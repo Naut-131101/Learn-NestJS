@@ -3,11 +3,20 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ConfigModule } from '@nestjs/config';
 import Joi from 'joi';
-import { TypeOrmModule } from '@nestjs/typeorm';
+import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { User } from './users/entities/user.entity';
 import { UsersModule } from './users/users.module';
 import { PhotoModule } from './photo/photo.module';
 import { Photo } from './photo/entities/photo.entity';
+
+const defaultOptions: TypeOrmModuleOptions = {
+  type: 'postgres',
+  port: 5432,
+  username: 'postgres',
+  password: 'root',
+  database: 'db',
+  synchronize: true,
+};
 
 @Module({
   imports: [
@@ -19,15 +28,16 @@ import { Photo } from './photo/entities/photo.entity';
       }),
     }),
     TypeOrmModule.forRoot({
-      type: 'mysql',
+      ...defaultOptions,
+      // name: 'default',
       host: 'localhost',
-      port: 3306,
-      username: 'root',
-      password: 'root',
-      database: 'test',
-      entities: [User, Photo],
-      synchronize: true,
-      autoLoadEntities: true,
+      entities: [User],
+    }),
+    TypeOrmModule.forRoot({
+      ...defaultOptions,
+      name: 'photosConnection',
+      host: 'localhost',
+      entities: [Photo],
     }),
     UsersModule,
     PhotoModule,
