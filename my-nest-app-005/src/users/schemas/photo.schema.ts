@@ -17,11 +17,11 @@ export const PhotoSchema = new EntitySchema<Photo>({
     },
   },
 
-  relations: {
-    user: {
-      type: 'many-to-one',
-      target: 'User',
-      inverseSide: 'photos',
-    },
-  },
+  // relations: {
+  //   user: {
+  //     type: 'many-to-one',
+  //     target: 'User',
+  //     inverseSide: 'photos',
+  //   },
+  // },
 });
