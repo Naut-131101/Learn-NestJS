@@ -7,6 +7,8 @@ import { AuthModule } from './auth/auth.module';
 import { envValidationSchema } from './config/env.validation';
 
 import { MongooseModule } from '@nestjs/mongoose';
+import { CatsModule } from './cats/cats.module';
+import { Connection } from 'mongoose';
 
 @Module({
   imports: [
@@ -19,13 +21,30 @@ import { MongooseModule } from '@nestjs/mongoose';
       },
     }),
     MongooseModule.forRootAsync({
+      imports: [ConfigModule],
       inject: [ConfigService],
-      useFactory: (configService: ConfigService) => ({
-        uri: configService.getOrThrow<string>('MONGODB_URI'),
-      }),
+      useFactory: (configService: ConfigService) => {
+        const uri = configService.getOrThrow<string>('MONGODB_URI');
+        return {
+          uri,
+          onConnectionCreate: (connection: Connection) => {
+            connection.on('connected', () => {
+              console.log('MongoDB connected');
+            });
+            connection.on('disconnected', () => {
+              console.log('MongoDB connected');
+            });
+            connection.on('connected', () => {
+              console.log('MongoDB connected');
+            });
+            return connection;
+          },
+        };
+      },
     }),
     UserModule,
     AuthModule,
+    CatsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
